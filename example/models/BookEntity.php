@@ -26,9 +26,7 @@ class BookEntity extends Ndab\Entity
 
 	public function getSortedTags()
 	{
-		return $this->getSubRelation('book_tag:tag', function($related) {
-			$related->order('tag.name ASC');
-		});
+		return $this->getSubRelation('book_tag:tag')->order('tag.name ASC');
 	}
 
 }

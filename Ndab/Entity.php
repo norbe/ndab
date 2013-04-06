@@ -45,21 +45,9 @@ class Entity extends Table\ActiveRow
 	 * @param  callable  callback for additional related call definition
 	 * @return array
 	 */
-	protected function getSubRelation($selector, $relatedCallback = NULL)
+	protected function getSubRelation($selector)
 	{
-		list($relatedSelector, $subItemSelector) = explode(':', $selector);
-
-		$related = $this->related($relatedSelector);
-		if ($relatedCallback) {
-			callback($relatedCallback)->invokeArgs(array($related));
-		}
-
-		$subItems = array();
-		foreach ($related as $subItem) {
-			$subItems[] = $subItem->$subItemSelector;
-		}
-
-		return $subItems;
+		return new SubRelation($this, $selector);
 	}
 
 }
