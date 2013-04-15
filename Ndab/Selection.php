@@ -23,80 +23,36 @@ use Nette,
  */
 class Selection extends Table\Selection
 {
-	/** @var Manager */
-	protected $manager;
+	/** @var RowFactory */
+	protected $rowFactory;
 
-	/** @var string */
-	protected $table;
-
-	/** @var string */
-	protected $rowClass;
-
-
-
-	/**
-	 * Selection constructor.
-	 * @param  string
-	 * @param  Nette\Database\Connection
-	 * @param  Manager
-	 */
-	public function __construct(Nette\Database\Connection $connection, $table, Manager $manager)
-	{
-		parent::__construct($connection, $this->table = $table, $manager->getDatabaseReflection());
-		$this->manager = $manager;
+	public function __construct(RowFactory $rowFactory, Nette\Database\Connection $connection, $table, Nette\Database\IReflection $reflection, Nette\Caching\IStorage $cacheStorage = NULL) {
+		parent::__construct($connection, $table, $reflection, $cacheStorage);
+		$this->rowFactory = $rowFactory;
 	}
-
-
-
-	/**
-	 * @return  Manager
-	 */
-	public function getManager()
-	{
-		return $this->manager;
-	}
-
-
 
 	public function getTable()
 	{
-		return $this->table;
+		return $this->name;
 	}
 
 
-
-	public function setRowClass($class)
+	public function createRow(array $row)
 	{
-		$this->rowClass = $class;
-		return $this;
+		return $this->rowFactory->create($row, $this);
 	}
 
-
-
-	public function getRowClass()
-	{
-		return $this->rowClass;
-	}
-
-
-
-	protected function createRow(array $row)
-	{
-		return $this->manager->initEntity($row, $this);
-	}
-
-
-
+	
 	protected function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->connection, $table ?: $this->table, $this->manager);
+		return new Selection($this->rowFactory, $this->connection, $table ?: $this->getTable(), $this->reflection, $this->cache->getStorage());
 	}
 
 
 
 	protected function createGroupedSelectionInstance($table, $column)
 	{
-		return new GroupedSelection($this, $table, $column, $this->manager);
+		return new GroupedSelection($this->rowFactory, $this, $table, $column);
 	}
 
 }

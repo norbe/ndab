@@ -23,69 +23,38 @@ use Nette,
  */
 class GroupedSelection extends Table\GroupedSelection
 {
-	/** @var string */
-	protected $table;
-
-	/** @var string */
-	protected $rowClass;
-	/** @var Manager */
-	protected $manager;
-
-
-
-	/**
-	 * Creates filtered and grouped table representation.
-	 * @param  Selection  $refTable
-	 * @param  string  database table name
-	 * @param  string  joining column
-	 */
-	public function __construct(Table\Selection $refTable, $table, $column, Manager $manager)
-	{
-		parent::__construct($refTable, $this->table = $table, $column);
-		$this->manager = $manager;
+	/** @var RowFactory */
+	protected $rowFactory;
+	
+	public function __construct(RowFactory $rowFactory, Table\Selection $refTable, $table, $column) {
+		parent::__construct($refTable, $table, $column);
+		$this->rowFactory = $rowFactory;
 	}
 
 
 
-	public function getTable()
+	public function getTable() {
+		return $this->name;
+	}
+
+	public function createRow(array $row)
 	{
-		return $this->table;
+		return $this->rowFactory->create($row, $this);
 	}
 
 
-
-	public function setRowClass($class)
-	{
-		$this->rowClass = $class;
-		return $this;
-	}
-
-
-
-	public function getRowClass()
-	{
-		return $this->rowClass;
-	}
-
-
-
-	protected function createRow(array $row)
-	{
-		return $this->refTable->manager->initEntity($row, $this);
-	}
-
-
-
+	
 	protected function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->connection, $table ?: $this->table, $this->refTable->manager);
+		return new Selection($this->rowFactory, $this->connection, $table ?: $this->getTable(), $this->reflection, $this->cache->getStorage());
 	}
 
 
 
 	protected function createGroupedSelectionInstance($table, $column)
 	{
-		return new GroupedSelection($this, $table, $column, $this->manager);
+		return new GroupedSelection($this->rowFactory, $this, $table, $column);
 	}
+
 
 }

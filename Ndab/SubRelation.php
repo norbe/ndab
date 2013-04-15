@@ -28,7 +28,7 @@ class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Cou
 	private $subItemSelector;
 	/** @var GroupedSelection */
 	private $related;
-	public function __construct(Entity $entity, $selector)
+	public function __construct(ActiveRow $entity, $selector)
 	{
 		$this->entity = $entity;
 		list($this->relatedSelector, $this->subItemSelector) = explode(':', $selector);
