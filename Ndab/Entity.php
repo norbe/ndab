@@ -24,39 +24,44 @@ use Nette,
 class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	/** @var ActiveRow */
 	protected $activeRow;
-	private $data;
+	private $values;
 	private $modified;
 	
 	/**
 	 * @param ActiveRow|array $data
 	 */
-	public function __construct($data = null) {
-		if($data instanceof Entity) {
-			debug_print_backtrace();
-		}
+	public function __construct($data = array(), $activeRow = null) {
 		if($data instanceof ActiveRow) {
 			$this->activeRow = $data;
-			$this->setData($data->toArray());
+			$this->setValues($data->toArray());
 		} else {
-			$this->setData($data);
+			$this->setValues($data);
+			$this->activeRow = $activeRow;
 		}
 	}
 	
-	public function setData($data) {
+	/**
+	 * @return ActiveRow
+	 */
+	public function getActiveRow() {
+		return $this->activeRow;
+	}
+	
+	public function setValues($data) {
 		foreach($data as $key => $value) {
 			$this->__set($key, $value);
 		}
 	}
 	
 	public function toArray() {
-		return $this->data;
+		return $this->values;
 	}
 		
 	/********************* interface IteratorAggregate ****************d*g**/
 
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->data);
+		return new \ArrayIterator($this->values);
 	}
 
 	/********************* interface ArrayAccess & magic accessors ****************d*g**/
@@ -110,33 +115,29 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	
 	public function __isset($key)
 	{
-		if (array_key_exists($key, $this->data)) {
-			return isset($this->data[$key]);
+		if (array_key_exists($key, $this->values)) {
+			return isset($this->values[$key]);
 		}
 		return false;
 	}
 	
 	public function __set($name, $value) {
-		$this->data[$name] = $value;
+		$this->values[$name] = $value;
 	}
 	
 	public function __unset($name) {
-		unset($this->data[$name]);
+		unset($this->values[$name]);
 	}
 	
 	public function & __get($key)
 	{
 		$method = "get$key";
 		$method[3] = $method[3] & "\xDF";
-
 		if (method_exists($this, $method)) {
 			$return = $this->$method();
 			return $return;
-		} else if(array_key_exists($key, $this->data)) {
-			return $this->data[$key];
-		} else if(!is_null($this->activeRow)) {
-			$return = $this->activeRow->__get($key);
-			return $return;
+		} else if(array_key_exists($key, $this->values)) {
+			return $this->values[$key];
 		} else {
 			throw new Nette\InvalidStateException("Unknown property '$key'");
 		}
