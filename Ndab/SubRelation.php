@@ -18,34 +18,21 @@ namespace Ndab;
  */
 class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Countable
 {
-	/** @var Entity */
-	private $entity;
+	/** @var ActiveRow */
+	private $activeRow;
 	/** @var \ArrayIterator */
 	private $entities;
-	/** @var string */
-	private $relatedSelector;
 	/** @var string */
 	private $subItemSelector;
 	/** @var GroupedSelection */
 	private $related;
-	public function __construct(ActiveRow $entity, $selector)
-	{
-		$this->entity = $entity;
-		list($this->relatedSelector, $this->subItemSelector) = explode(':', $selector);
-
-
-		
-	}
 	
-	/**
-	 * @return GroupedSelection
-	 */
-	private function getRelated() {
-		if(is_null($this->related)) {
-			$this->related = $this->entity->related($this->relatedSelector);
-		}
+	public function __construct(ActiveRow $row, $selector, $throughtColumn = null) {
+		$this->activeRow = $row;
+		list($relatedSelector, $this->subItemSelector) = explode(':', $selector);
+		$this->related = $this->activeRow->related($relatedSelector, $throughtColumn);
+
 		
-		return $this->related;
 	}
 	
 	/**
@@ -54,7 +41,7 @@ class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Cou
 	protected function getEntities() {
 		if(is_null($this->entities)) {
 			$entities = array();
-			foreach ($this->getRelated() as $subItem) {
+			foreach ($this->related as $subItem) {
 				$entities[] = $subItem->{$this->subItemSelector};
 			}
 			$this->entities = new \ArrayIterator($entities);
@@ -141,7 +128,7 @@ class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Cou
 	 * @return SubRelation
 	 */
 	public function where($condition, $parameters = array()) {
-		$this->getRelated()->where($condition, $parameters);
+		$this->related->where($condition, $parameters);
 		return $this;
 	}		 
 	/**
@@ -150,7 +137,7 @@ class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Cou
 	 * @return SubRelation provides a fluent interface
 	 */
 	public function order($columns) {
-		$this->getRelated()->order($columns);
+		$this->related->order($columns);
 		return $this;
 	}
 		/**
@@ -161,7 +148,7 @@ class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Cou
 	 */
 	public function limit($limit, $offset = NULL)
 	{
-		$this->getRelated()->limit($limit, $offset);
+		$this->related->limit($limit, $offset);
 		return $this;
 	}
 	/**
@@ -172,7 +159,7 @@ class SubRelation extends \Nette\Object implements \Iterator, \ArrayAccess, \Cou
 	 */
 	public function page($page, $itemsPerPage)
 	{
-		$this->getRelated()->limit($itemsPerPage, ($page - 1) * $itemsPerPage);
+		$this->related->limit($itemsPerPage, ($page - 1) * $itemsPerPage);
 		return $this;
 	}
 }

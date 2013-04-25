@@ -26,8 +26,8 @@ class ActiveRow extends Table\ActiveRow {
 	 * @param string
 	 * @return \Ndab\SubRelation
 	 */
-	public function getSubRelation($selector) {
-		return new \Ndab\SubRelation($this, $selector);
+	public function getSubRelation($selector, $throughtColumn = null) {
+		return new \Ndab\SubRelation($this, $selector, $throughtColumn);
 	}
 }
 
