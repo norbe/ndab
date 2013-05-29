@@ -28,11 +28,14 @@ class Extension extends Nette\DI\CompilerExtension
 
         $builder->addDefinition($this->prefix('settings'))
         	->setClass('Ndab\Settings')
-			->addTag('Ndab\Settings')
-        	->setFactory('Ndab\Settings::from', array($config));
+			->addTag('Ndab\Settings') 
+       	->setFactory('Ndab\Settings::from', array($config));
 		
 		$builder->addDefinition($this->prefix('rowFactory'))
 			->setClass('Ndab\RowFactory');
+		
+		$builder->addDefinition($this->prefix('selectionFactory'))
+			->setClass('Ndab\SelectionFactory');
 	}
 	
 	public function beforeCompile() {

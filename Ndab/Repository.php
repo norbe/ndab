@@ -26,8 +26,8 @@ abstract class Repository extends Nette\Object
 	/** @var Nette\Database\Connection */
 	protected $connection;
 
-	/** @var Nette\Database\Table\IReflection */
-	protected $databaseReflection;
+	/** @var SelectionFactory */
+	protected $selectionFactory;
 
 	/** @var string */
 	protected $tableName;
@@ -43,9 +43,8 @@ abstract class Repository extends Nette\Object
 	 * @param  string
 	 * @param  string
 	 */
-	public function __construct(Nette\Database\Connection $connection, $tableName = NULL)
+	public function __construct($tableName = NULL)
 	{
-		$this->connection = $connection;
 		if ($tableName) {
 			$this->tableName = $tableName;
 		}
@@ -53,11 +52,13 @@ abstract class Repository extends Nette\Object
 		if (empty($this->tableName)) {
 			throw new Nette\InvalidStateException('Undefined tableName property in ' . $this->getReflection()->name);
 		}
-
-		$this->databaseReflection = $connection->table($this->tableName)->getDatabaseReflection();
-		$this->primaryColumn = $this->databaseReflection->getPrimary($this->tableName);
 	}
 
+	public function inject(Nette\Database\Connection $connection, SelectionFactory $selectionFactory, \Nette\Database\IReflection $reflection) {
+		$this->connection = $connection;
+		$this->selectionFactory = $selectionFactory;
+		$this->primaryColumn = $reflection->getPrimary($this->tableName);
+	}
 
 	/**
 	 * Returns all rows filtered by $conds
@@ -137,7 +138,7 @@ abstract class Repository extends Nette\Object
 	 */
 	final protected function table()
 	{
-		return $this->connection->table($this->tableName);
+		return $this->selectionFactory->create($this->tableName);
 	}
 
 

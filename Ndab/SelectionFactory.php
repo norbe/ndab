@@ -21,7 +21,7 @@ use Nette,
  *
  * @author Karel Hak
  */
-class SelectionFactory extends Table\SelectionFactory {
+class SelectionFactory extends Nette\Database\SelectionFactory {
 	/** @var RowFactory */
 	protected $rowFactory;
 	/** @var Nette\Database\Connection */

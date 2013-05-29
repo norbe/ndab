@@ -43,7 +43,7 @@ class Selection extends Table\Selection
 	}
 
 	
-	protected function createSelectionInstance($table = NULL)
+	public function createSelectionInstance($table = NULL)
 	{
 		return new Selection($this->rowFactory, $this->connection, $table ?: $this->getTable(), $this->reflection, $this->cache->getStorage());
 	}
