@@ -34,6 +34,6 @@ class RowFactory extends \Nette\Object {
 		$class = isset($this->settings->tables->{$selection->getName()})
 			? $this->settings->tables->{$selection->getName()}
 			: $this->defaultClass;
-		return new $class($data, new ActiveRow($data, $selection));
+		return new $class(new ActiveRow($data, $selection));
 	}
 }

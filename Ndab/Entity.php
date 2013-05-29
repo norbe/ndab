@@ -24,19 +24,17 @@ use Nette,
 class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	/** @var ActiveRow */
 	protected $activeRow;
-	private $values;
+	private $values = array();
 	private $modified;
 	
 	/**
 	 * @param ActiveRow|array $data
 	 */
-	public function __construct($data = array(), $activeRow = null) {
+	public function __construct($data = array()) {
 		if($data instanceof ActiveRow) {
 			$this->activeRow = $data;
-			$this->setValues($data->toArray());
 		} else {
 			$this->setValues($data);
-			$this->activeRow = $activeRow;
 		}
 	}
 	
@@ -54,14 +52,14 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	}
 	
 	public function toArray() {
-		return $this->values;
+		return $this->values + (is_null($this->activeRow) ? array() : $this->activeRow->toArray());
 	}
 		
 	/********************* interface IteratorAggregate ****************d*g**/
 
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->values);
+		return new \ArrayIterator($this->values + (is_null($this->activeRow) ? array() : $this->activeRow->toArray()));
 	}
 
 	/********************* interface ArrayAccess & magic accessors ****************d*g**/
@@ -117,6 +115,8 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	{
 		if (array_key_exists($key, $this->values)) {
 			return isset($this->values[$key]);
+		} else if($this->activeRow) {
+			return isset($this->activeRow[$key]);
 		}
 		return false;
 	}
@@ -138,6 +138,17 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 			return $return;
 		} else if(array_key_exists($key, $this->values)) {
 			return $this->values[$key];
+		} else if(!is_null($this->activeRow)) {
+			if($key == 'data') {
+				$reflection = new \ReflectionClass('Nette\Database\Table\ActiveRow');
+				$property = $reflection->getProperty('data');
+				$property->setAccessible(true);
+				$value = $property->getValue($this->activeRow);
+				
+			} else {
+				$value = $this->activeRow->$key;
+			}
+			return $value;
 		} else {
 			throw new Nette\InvalidStateException("Unknown property '$key'");
 		}
