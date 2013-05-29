@@ -15,7 +15,7 @@ use Nette;
 
 
 
-class Extension extends Nette\Config\CompilerExtension
+class Extension extends Nette\DI\CompilerExtension
 {
 
     public function loadConfiguration()
