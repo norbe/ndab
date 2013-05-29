@@ -137,7 +137,7 @@ abstract class Repository extends Nette\Object
 	 */
 	final protected function table()
 	{
-		return $this->connection->table($this->tableName)->select('*');
+		return $this->connection->table($this->tableName);
 	}
 
 
