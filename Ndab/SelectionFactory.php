@@ -38,6 +38,9 @@ class SelectionFactory extends Nette\Database\SelectionFactory {
 		$this->cacheStorage = $cacheStorage;
 	}
 	
+	public function table($table) {
+		return $this->create($table);
+	}
 	public function create($table) {
 		return new Selection($this->rowFactory, $this->connection, $table, $this->reflection, $this->cacheStorage);
 	}
