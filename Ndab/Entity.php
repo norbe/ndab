@@ -121,7 +121,16 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 		return false;
 	}
 	
-	public function __set($name, $value) {
+	public function __set($name, $value) {		
+		$method = "set" . ucfirst($name);		
+		if (method_exists($this, $method)) {
+			$this->$method($value);
+		} else {
+			$this->setKeyValue($name, $value);
+		}
+	}
+	
+	protected function setKeyValue($name, $value) {
 		$this->values[$name] = $value;
 	}
 	
