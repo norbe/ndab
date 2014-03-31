@@ -1,14 +1,19 @@
 {
-	"name": "ndab/ndab",
+	"name": "norbe/ndab",
 	"description": "Ndab - ORM builded on Nette\\Database.",
 	"keywords": ["nette", "database", "orm", "db"],
-	"homepage": "https://github.com/hrach/ndab",
+	"homepage": "https://github.com/norbe/ndab",
 	"license": "MIT",
 	"authors": [
 		{
 			"name": "Jan Skrasek",
 			"email": "jan@skrasek.com",
 			"homepage": "http://jan.skrasek.com"
+		},
+		{
+			"name": "Karel Hak",
+			"email": "karel.hak@fregis.cz",
+			"homepage": "http://www.fregis.cz"
 		}
 	],
 	"autoload": {
@@ -16,6 +21,6 @@
 	},
 	"require": {
 		"php": ">=5.3.2",
-		"nette/nette": "dev-master"
+		"nette/nette": "2.1"
 	}
 }
