@@ -140,7 +140,9 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	
 	public function & __get($key)
 	{
-		$method = "get" . preg_replace('/(?:^|_)(.?)/e',"strtoupper('$1')", $key);
+		$method = "get" . preg_replace_callback('/(?:^|_)(.?)/',function($matches) {
+			return strtoupper($matches[1]);
+		}, $key);
 		if (method_exists($this, $method)) {
 			$return = $this->$method();
 			return $return;
