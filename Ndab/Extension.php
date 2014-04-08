@@ -44,7 +44,7 @@ class Extension extends Nette\DI\CompilerExtension
 		foreach($builder->getDefinitions() as $definition) {
 			if($definition->class == 'Nette\Database\Connection') {
 				foreach($definition->setup as $statement) {
-					if($statement->entity == 'setSelectionFactory') {
+					if($statement->entity == 'setContext') {
 						$selectionFactory = array_shift($statement->arguments);
 						/* @var $selectionFactory \Nette\DI\Statement */
 						$selectionFactory->entity = '\Ndab\SelectionFactory';
