@@ -59,7 +59,7 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->values + (is_null($this->activeRow) ? array() : $this->activeRow->toArray()));
+		return new \ArrayIterator($this->toArray());
 	}
 
 	/********************* interface ArrayAccess & magic accessors ****************d*g**/
