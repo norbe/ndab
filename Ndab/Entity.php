@@ -130,6 +130,13 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 		}
 	}
 	
+	protected function getKeyValue($key) {
+		if(array_key_exists($key, $this->values)) {
+			return $this->values[$key];
+		}
+		return NULL;
+	}
+	
 	protected function setKeyValue($name, $value) {
 		$this->values[$name] = $value;
 	}
