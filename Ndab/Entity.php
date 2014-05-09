@@ -134,7 +134,9 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 		if(array_key_exists($key, $this->values)) {
 			return $this->values[$key];
 		}
-		return NULL;
+		return $this->activeRow
+				? $this->activeRow->$key
+				: NULL;
 	}
 	
 	protected function setKeyValue($name, $value) {
