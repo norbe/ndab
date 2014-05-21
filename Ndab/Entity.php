@@ -26,6 +26,8 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	protected $activeRow;
 	private $values = array();
 	private $modified;
+	/** @var Entity[] */
+	private $connectedEntities = array();
 	
 	/**
 	 * @param ActiveRow|array $data
@@ -157,13 +159,14 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 			return $return;
 		} else if(array_key_exists($key, $this->values)) {
 			return $this->values[$key];
+		} else if(array_key_exists($key, $this->connectedEntities)) {
+			return $this->connectedEntities[$key];
 		} else if(!is_null($this->activeRow)) {
 			if($key == 'data') {
 				$reflection = new \ReflectionClass('Nette\Database\Table\ActiveRow');
 				$property = $reflection->getProperty('data');
 				$property->setAccessible(true);
 				$value = $property->getValue($this->activeRow);
-				
 			} else {
 				$value = $this->activeRow->$key;
 			}
@@ -185,5 +188,21 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param string $name
+	 * @param \Ndab\Entity $entity
+	 * @return \Ndab\Entity
+	 */
+	public function connectEntity($name, Entity $entity) {
+		if(isset($this->connectedEntities[$name])) {
+			$this->connectedEntities[$name] = (is_array($this->connectedEntities[$name]) ?
+											$this->connectedEntities[$name] : array($this->connectedEntities[$name]))
+											+ array($entity);
+		} else {
+			$this->connectedEntities[$name] = $entity;
+		}
+		return $this;
 	}
 }
