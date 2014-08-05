@@ -148,7 +148,11 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 	public function __unset($name) {
 		unset($this->values[$name]);
 	}
-	
+
+	public function getConnectedEntities() {
+		return $this->connectedEntities;
+	}
+
 	public function & __get($key)
 	{
 		$method = "get" . preg_replace_callback('/(?:^|_)(.?)/',function($matches) {
@@ -159,8 +163,6 @@ class Entity extends Nette\Object implements \ArrayAccess, \IteratorAggregate {
 			return $return;
 		} else if(array_key_exists($key, $this->values)) {
 			return $this->values[$key];
-		} else if(array_key_exists($key, $this->connectedEntities)) {
-			return $this->connectedEntities[$key];
 		} else if(!is_null($this->activeRow)) {
 			if($key == 'data') {
 				$reflection = new \ReflectionClass('Nette\Database\Table\ActiveRow');
